@@ -23,7 +23,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 	begin
 		if (RESET == 0)
 		begin
-			stateCounter <= 5'd15;
+			stateCounter <= 5'd15;	// Make sure shutdown time of 310ns is achieved 
 			CS <= 1'b1;
 			Din <= 1'b1;
 			sample <= 8'd0;
