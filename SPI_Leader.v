@@ -34,7 +34,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 			// Startup segment
 			5'd0	: 
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b1;
 				Din <= 1'b1; // Don't care
 			end
@@ -42,25 +42,25 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 			// Config segment
 			5'd1	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Must be kept low for at least 100ns before next CLKsample
 				Din <= 1'b1; // Startup condition
 			end
 			5'd2	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Selects SIGNULAR mode
 			end
 			5'd3	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Selects CH1 for analog input
 			end
 			5'd4	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Selects MSB first mode
 			end
@@ -68,63 +68,63 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 			// Begin reading sample bit
 			5'd5	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				// Dout is null here
 			end
 			5'd6	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[0] <= Dout; //Begin shifting Dout into Sample
 			end
 			5'd7	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[1] <= Dout; // Shift Dout into sample
 			end
 			5'd8	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[2] <= Dout; // Shift Dout into sample
 			end
 			5'd9	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[3] <= Dout; // Shift Dout into sample
 			end
 			5'd10	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[4] <= Dout; // Shift Dout into sample
 			end
 			5'd11	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[5] <= Dout; // Shift Dout into sample
 			end
 			5'd12	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[6] <= Dout; // Shift Dout into sample
 			end
 			5'd13	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Don't Care
 				sample[7] <= Dout; // Shift Dout into sample
@@ -133,14 +133,14 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 			// Cutoff sample conversion
 			5'd14	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Goes high for at least 310 ns for shutdown time
 				Din <= 1'b1; // Don't Care
 				Sample_word <= sample;
 			end
 			5'd15	:
 			begin
-				stateCounter = stateCounter + 1;
+				stateCounter <= stateCounter + 1;
 				CS <= 1'b0; // Goes high for at least 310 ns for shutdown time
 				Din <= 1'b1; // Don't Care
 				stateCounter <= 5'd0;
@@ -170,4 +170,4 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 			end
 	end			
 	
-endmodule;
+endmodule
