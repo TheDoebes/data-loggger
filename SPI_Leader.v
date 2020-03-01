@@ -5,7 +5,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 	// I/O - Labels corrospond to MCP3002 Datasheet
 	input CLK_50MHz;
 	input Dout;
-	input RESET;
+	input RESET; // Active low reset signal
 	output reg CLKsample;
 	output reg Din;
 	output reg CS;
@@ -19,11 +19,15 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 	// Logic
 	
 	// Interface with the device
-	always @ (*)
+	always @ (posedge CLKsample or negedge RESET)
 	begin
-		if (RESET)
+		if (RESET == 0)
 		begin
 			stateCounter <= 5'd15;
+			CS <= 1'b1;
+			Din <= 1'b1;
+			sample <= 8'd0;
+			Sample_word <= 8'd0;
 		end
 				
 		case (stateCounter) // Manipulate the control lines each clock cycle
@@ -149,8 +153,15 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 	
 	
 	// Create a 3.125 MHz signal
-	always @ (CLK_50MHz) 
+	always @ (posedge CLK_50MHz or negedge RESET) 
 	begin
+		
+		if (RESET == 0)
+			begin
+				CLKsample <= 0;
+				timeCounter <= 5'd0;
+			end
+		
 		timeCounter <= timeCounter + 1;
 		if (timeCounter == 5'd8)
 			begin
