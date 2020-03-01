@@ -1,44 +1,44 @@
 module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
-	
+
 	// SPI_Leader - control module for MCP3002 ADC
-	
+
 	// I/O - Labels corrospond to MCP3002 Datasheet
-	input CLK_50MHz;				// Driver clock for this module
-	input Dout;						// Serialized ADC output
-	input RESET;					// Active low reset signal
-	output reg CLKsample;			// Control clock for ADC
-	output reg Din;					// Config line for ADC
-	output reg CS;					// Chip Enable for ADC, Active low
-	output reg [7:0] Sample_word;	// Sampled signal
-	
+	input CLK_50MHz; // Driver clock for this module
+	input Dout; // Serialized ADC output
+	input RESET; // Active low reset signal
+	output reg CLKsample; // Control clock for ADC
+	output reg Din; // Config line for ADC
+	output reg CS; // Chip Enable for ADC, Active low
+	output reg [7:0] Sample_word; // Sampled signal
+
 	// Internal Wiring
-	reg [4:0] timeCounter;	// 50MHz Counter, resets at 3.125 MHz
+	reg [4:0] timeCounter; // 50MHz Counter, resets at 3.125 MHz
 	reg [4:0] stateCounter; // 3.125 MHz counter, resets at every sample
-	reg [7:0] sample;		// Shift register to deserialize sample bits
-	
+	reg [7:0] sample; // Shift register to deserialize sample bits
+
 	// Logic
-	
+
 	// Interface with the ADC device every CLKsample
 	always @ (posedge CLKsample or negedge RESET)
 	begin
 		if (RESET == 0)
 		begin
-			stateCounter <= 5'd15;	// Make sure shutdown time of 310ns is achieved 
+			stateCounter <= 5'd15; // Make sure shutdown time of 310ns is achieved 
 			CS <= 1'b1;
 			Din <= 1'b1;
 			sample <= 8'd0;
 			Sample_word <= 8'd0;
 		end
-				
+
 		case (stateCounter) // Manipulate the control lines each clock cycle
-			// Startup segment
-			5'd0	: 
+		// Startup segment
+			5'd0	:
 			begin
 				stateCounter <= stateCounter + 1;
 				CS <= 1'b1;
 				Din <= 1'b1; // Don't care
 			end
-			
+
 			// Config segment
 			5'd1	:
 			begin
@@ -64,7 +64,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 				CS <= 1'b0; // Stays low to run chip
 				Din <= 1'b1; // Selects MSB first mode
 			end
-			
+
 			// Begin reading sample bit
 			5'd5	:
 			begin
@@ -129,7 +129,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 				Din <= 1'b1; // Don't Care
 				sample[7] <= Dout; // Shift Dout into sample
 			end
-			
+
 			// Cutoff sample conversion
 			5'd14	:
 			begin
@@ -145,29 +145,31 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 				Din <= 1'b1; // Don't Care
 				stateCounter <= 5'd0;
 			end
-			
+
 			default	: stateCounter <= 5'd0;
 		endcase
-		
-	end	
-	
-	
+
+	end
+
+
 	// Create a 3.125 MHz signal
-	always @ (posedge CLK_50MHz or negedge RESET) 
+	always @ (posedge CLK_50MHz or negedge RESET)
 	begin
-		
+
 		if (RESET == 0)
 			begin
 				CLKsample <= 0;
 				timeCounter <= 5'd0;
 			end
-		
-		timeCounter <= timeCounter + 1;
-		if (timeCounter == 5'd8)
+		else
 			begin
-				CLKsample <= !CLKsample;
-				timeCounter <= 5'd0;
+				timeCounter <= timeCounter + 1;
+				if (timeCounter == 5'd8)
+				begin
+					CLKsample <= !CLKsample;
+					timeCounter <= 5'd0;
+				end
 			end
-	end			
-	
+	end
+
 endmodule
