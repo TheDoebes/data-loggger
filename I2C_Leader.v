@@ -1,4 +1,4 @@
-module I2C_Leader(CLK_50MHz, WP, );
+module I2C_Leader(CLK_50MHz, WP, SCL, SDA );
 	// Module to connect 24LC256-I/P EEPROM
 	
 	// Cicuit notes:
@@ -13,10 +13,14 @@ module I2C_Leader(CLK_50MHz, WP, );
 	// I/O
 	input CLK_50MHz; 	// Control clock from DE2-115
 	output WP; 			// EEPROM Write-Protect
+	inout SCL;
+	inout SDA;
 	
 	// Parameters
-	wire ackPolling;
-	assign ackPolling = 1;
+	wire useAckPolling;
+	assign useAckPolling = 1;
+	
+	// Internal Wiring
 	
 	
 endmodule
