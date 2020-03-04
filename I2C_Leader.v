@@ -1,4 +1,4 @@
-module I2C_Leader(CLK_50MHz, WP, SCL, SDA );
+module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP );
 	// Module to connect 24LC256-I/P EEPROM
 	
 	// Cicuit notes:
@@ -11,16 +11,21 @@ module I2C_Leader(CLK_50MHz, WP, SCL, SDA );
 	//	- Vcc > Vmin during writes
 	
 	// I/O
+	// FPGA control lines
 	input CLK_50MHz; 	// Control clock from DE2-115
-	output WP; 			// EEPROM Write-Protect
+	input RESET;		// Module reset line
+	// I2C comm lines
 	inout SCL;
 	inout SDA;
+	// EEPROM config lines
+	output WP; 			// EEPROM Write-Protect
 	
 	// Parameters
-	wire useAckPolling;
-	assign useAckPolling = 1;
+	wire useAckPolling = 1; // enable continuous polling the Acknowledge bit intead of waiting Twc
+	wire usePageWrites = 1; // enable page write mode instead of byte write mode
 	
 	// Internal Wiring
+	
 	
 	
 endmodule
