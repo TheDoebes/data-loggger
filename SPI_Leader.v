@@ -59,7 +59,7 @@ module SPI_Leader(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
 						CS <= 1'b0; // Stays low to run chip
 						Din <= 1'b1; // Selects CH1 for analog input
 					end
-					5'd4	:
+					5'd4	: // TODO duplicate this state to add an additional delay, fixing an off by one
 					begin
 						stateCounter <= stateCounter + 1;
 						CS <= 1'b0; // Stays low to run chip
