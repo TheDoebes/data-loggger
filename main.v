@@ -11,12 +11,25 @@ module main(SW, LEDR, GPIO, CLK_50MHz);
 	reg CACHE[511:0];
 	reg CacheIndex[4:0];
 	wire RESET;
+	wire [7:0] Sample_word;
+	
 	
 	
 	// Internal Logic
 	
 	// Module Instantiation
-	SPI_Leader ADC_Controller(CLK_50MHz, CLKsample, Din, Dout, CS, RESET, Sample_word);
+	SPI_Leader ADC_Controller(
+		// Inputs
+		.CLK_50MHz(CLK_50MHz), 
+		.Dout(GPIO[0]), 
+		.RESET(RESET), 
+		
+		// Outputs
+		.CLKsample(GPIO[1]), 
+		.Din(GPIO[2]), 
+		.CS(GPIO[3]), 
+		.Sample_word(Sample_word)
+	);
 	I2C_Leader EEPROM_Controller(CLK_800KHz, RESET, SDA, SCL, WP, CACHE);
 	
 	// Combinatorial
@@ -24,7 +37,7 @@ module main(SW, LEDR, GPIO, CLK_50MHz);
 	assign LEDR[0] = RESET;
 	
 	// Procedural
-	always @(Sample_word)
+	always @ (Sample_word or negedge RESET)
 		begin
 			
 		end
