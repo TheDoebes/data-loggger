@@ -1,4 +1,4 @@
-module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP, CACHE, CLK_800kPLL);
+module I2C_Leader(CLK_800KHz, RESET, SDA, SCL, WP, CACHE);
 	// Module to connect 24LC256-I/P EEPROM
 	
 	// Cicuit notes:
@@ -11,9 +11,9 @@ module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP, CACHE, CLK_800kPLL);
 	//	- Vcc > Vmin during writes
 	
 	// I/O
-	input [63:0] CACHE;
+	input [511:0] CACHE;
 	// FPGA control lines
-	input CLK_50MHz; 	// Control clock from DE2-115
+	input CLK_800KHz; 	// Control clock from DE2-115
 	input RESET;		// Module reset line
 	// I2C comm lines
 	output reg SCL;
@@ -37,14 +37,14 @@ module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP, CACHE, CLK_800kPLL);
 	reg [2:0] ByteState;
 	reg [4:0] State;
 	reg sdaEnable;
-	reg sdaCache;
+	reg sdaCACHE;
 	reg [14:0] MemLoc;
 	reg [5:0] DataIndex;
 	
-	assign SDA = (sdaEnable) ? sdaCache : 1'bz;
+	assign SDA = (sdaEnable) ? sdaCACHE : 1'bz;
 	
 	//Generate SCL
-	always @ (posedge CLK_50MHz or negedge RESET)
+	always @ (posedge CLK_800KHz or negedge RESET)
 	begin
 
 		if (RESET == 0)
@@ -57,127 +57,131 @@ module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP, CACHE, CLK_800kPLL);
 				counter <= counter + 1;
 				if (counter)
 				begin
-					SDALogicCLK <= !SDALogicCLK;
+					SCL <= !SCL;
 					counter <= 1'd0;
 				end
 			end // End if/else block for resetting
 	end
 	
-	always @ (posedge SDALogicCLK)
+	always @ (posedge CLK_800KHz) begin
 		
 		case(ByteState)
 			ControlByte:
 			begin
 				case(State)
-					5'b0:	sdaCache <= 0;
-					5'd1: 	sdaCache <= 1;
-					5'd2:	;//Nothing
-					5'd3:	sdaCache <= 0;
-					5'd4:	;//Nothing
-					5'd5:	sdaCache <= 1;
-					5'd6:	;//Nothing
-					5'd7:	sdaCache <= 0;
-					5'd8:	;//Nothing
-					5'd9:	sdaCache <= 0;
+					5'b0:		sdaCACHE <= 0;
+					5'd1: 	sdaCACHE <= 1;
+					5'd2:		;//Nothing
+					5'd3:		sdaCACHE <= 0;
+					5'd4:		;//Nothing
+					5'd5:		sdaCACHE <= 1;
+					5'd6:		;//Nothing
+					5'd7:		sdaCACHE <= 0;
+					5'd8:		;//Nothing
+					5'd9:		sdaCACHE <= 0;
 					5'd10:	;//Nothing
-					5'd11:	sdaCache <= 0;
+					5'd11:	sdaCACHE <= 0;
 					5'd12:	;//Nothing
-					5'd13:	sdaCache <= 0;
+					5'd13:	sdaCACHE <= 0;
 					5'd14:	;//Nothing
-					5'd15:	sdaCache <= 0;
+					5'd15:	sdaCACHE <= 0;
 					5'd16:	;//Nothing
 					5'd17:	begin
 						sdaEnable <= 0;
 						ByteState <= AddressMSBByte;
 						end
 				endcase
-				State <= State + 1;
+				if(State >= 5'd18)
+					State <= 0;
+				else
+					State <= State + 1;
 					
 			end
 			AddressMSBByte:
 			begin
 				case(State)
-					5'd0:	;//Nothing
-					5'd1: 	sdaCache <= 1; //Don't care
-					5'd2:	;//Nothing
-					5'd3:	sdaCache <= MemLoc[14];
-					5'd4:	;//Nothing
-					5'd5:	sdaCache <= MemLoc[13];
-					5'd6:	;//Nothing
-					5'd7:	sdaCache <= MemLoc[12];
-					5'd8:	;//Nothing
-					5'd9:	sdaCache <= MemLoc[11];
+					5'd0:		;//Nothing
+					5'd1: 	sdaCACHE <= 1; //Don't care
+					5'd2:		;//Nothing
+					5'd3:		sdaCACHE <= MemLoc[14];
+					5'd4:		;//Nothing
+					5'd5:		sdaCACHE <= MemLoc[13];
+					5'd6:		;//Nothing
+					5'd7:		sdaCACHE <= MemLoc[12];
+					5'd8:		;//Nothing
+					5'd9:		sdaCACHE <= MemLoc[11];
 					5'd10:	;//Nothing
-					5'd11:	sdaCache <= MemLoc[10];
+					5'd11:	sdaCACHE <= MemLoc[10];
 					5'd12:	;//Nothing
-					5'd13:	sdaCache <= MemLoc[9];
+					5'd13:	sdaCACHE <= MemLoc[9];
 					5'd14:	;//Nothing
-					5'd15:	sdaCache <= MemLoc[8];
+					5'd15:	sdaCACHE <= MemLoc[8];
 					5'd16:	;//Nothing
 					5'd17:	begin
 						sdaEnable <= 0;
 						ByteState <= AddressLSBByte;
 						end
 				endcase
-				State <= State + 1;
 				if(State >= 5'd18)
-					State <= 5'd0;
+					State <= 0;
+				else
+					State <= State + 1;
 			end	
 			AddressLSBByte:
 			begin
 				case(State)
-					5'd0:	;//Nothing
-					5'd1: 	sdaCache <= MemLoc[7]; //Don't care
-					5'd2:	;//Nothing
-					5'd3:	sdaCache <= MemLoc[6];
-					5'd4:	;//Nothing
-					5'd5:	sdaCache <= MemLoc[5];
-					5'd6:	;//Nothing
-					5'd7:	sdaCache <= MemLoc[4];
-					5'd8:	;//Nothing
-					5'd9:	sdaCache <= MemLoc[3];
+					5'd0:		;//Nothing
+					5'd1: 	sdaCACHE <= MemLoc[7]; //Don't care
+					5'd2:		;//Nothing
+					5'd3:		sdaCACHE <= MemLoc[6];
+					5'd4:		;//Nothing
+					5'd5:		sdaCACHE <= MemLoc[5];
+					5'd6:		;//Nothing
+					5'd7:		sdaCACHE <= MemLoc[4];
+					5'd8:		;//Nothing
+					5'd9:		sdaCACHE <= MemLoc[3];
 					5'd10:	;//Nothing
-					5'd11:	sdaCache <= MemLoc[2];
+					5'd11:	sdaCACHE <= MemLoc[2];
 					5'd12:	;//Nothing
-					5'd13:	sdaCache <= MemLoc[1];
+					5'd13:	sdaCACHE <= MemLoc[1];
 					5'd14:	;//Nothing
-					5'd15:	sdaCache <= MemLoc[0];
+					5'd15:	sdaCACHE <= MemLoc[0];
 					5'd16:	;//Nothing
 					5'd17:	begin
 						sdaEnable <= 0;
 						ByteState <= DataByte;
 						end
 				endcase
-				State <= State + 1;
 				if(State >= 5'd18)
-					State <= 5'd0;
+					State <= 0;
+				else
+					State <= State + 1;
 			end	
 			DataByte:
 			begin
 				case(State)
-					5'd0:	;//Nothing
-					5'd1: 	sdaCache <= Cache[DataIndex]; //Don't care
-					5'd2:	;//Nothing
-					5'd3:	sdaCache <= Cache[DataIndex + 1];
-					5'd4:	;//Nothing
-					5'd5:	sdaCache <= Cache[DataIndex + 2];
-					5'd6:	;//Nothing
-					5'd7:	sdaCache <= Cache[DataIndex + 3];
-					5'd8:	;//Nothing
-					5'd9:	sdaCache <= Cache[DataIndex + 4];
+					5'd0:		;//Nothing
+					5'd1: 	sdaCACHE <= CACHE[DataIndex]; //Don't care
+					5'd2:		;//Nothing
+					5'd3:		sdaCACHE <= CACHE[DataIndex + 1];
+					5'd4:		;//Nothing
+					5'd5:		sdaCACHE <= CACHE[DataIndex + 2];
+					5'd6:		;//Nothing
+					5'd7:		sdaCACHE <= CACHE[DataIndex + 3];
+					5'd8:		;//Nothing
+					5'd9:		sdaCACHE <= CACHE[DataIndex + 4];
 					5'd10:	;//Nothing
-					5'd11:	sdaCache <= Cache[DataIndex + 5];
+					5'd11:	sdaCACHE <= CACHE[DataIndex + 5];
 					5'd12:	;//Nothing
-					5'd13:	sdaCache <= Cache[DataIndex + 6];
+					5'd13:	sdaCACHE <= CACHE[DataIndex + 6];
 					5'd14:	;//Nothing
-					5'd15:	sdaCache <= Cache[DataIndex + 7];
+					5'd15:	sdaCACHE <= CACHE[DataIndex + 7];
 					5'd16:	;//Nothing
 					5'd17:	begin
 						sdaEnable <= 0;
 						DataIndex <= DataIndex + 8;
 						end
 				endcase
-				State <= State + 1;
 				
 				if(DataIndex == 56 && State >= 5'd18)
 					ByteState <= Done;
@@ -185,12 +189,16 @@ module I2C_Leader(CLK_50MHz, RESET, SDA, SCL, WP, CACHE, CLK_800kPLL);
 				else if(State >= 5'd18)
 					State <= 5'd0;
 					
+				else
+					State <= State + 1;
+					
 				
 			end
 			Done:
 			begin
-				sdaCache <= 1'b1;if(DataIndex == 56 && State >= 5'd18)
+				sdaCACHE <= 1'b1;if(DataIndex == 56 && State >= 5'd18)
 					ByteState <= Done;
 			end
 		endcase
+	end
 endmodule
