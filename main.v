@@ -5,7 +5,7 @@ module main(SW, LEDR, GPIO, CLK_50MHz);
 	// I/O
 	input SW[0:0];
 	input CLK_50MHz;
-	inout GPIO[23:0];
+	inout GPIO[35:0];
 	output LEDR[0:0];
 
 	// Internal Wiring
