@@ -1,5 +1,8 @@
 #include <Wire.h>
 
+// A4 (SDA), A5 (SCL)
+// 5v VCC, GND to Vss
+
 void setup()  // Read one page
 {
   Serial.begin(9600);
@@ -38,4 +41,3 @@ void loop() //don't do anything
 
 
 }
-
