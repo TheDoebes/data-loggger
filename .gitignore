@@ -58,3 +58,7 @@
 !*.tcl
 
 # End of https://www.gitignore.io/api/alteraquartusii
+
+# Allow Arduino Source Code
+!*.ino
+
