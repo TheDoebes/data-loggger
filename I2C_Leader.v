@@ -11,7 +11,7 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 	//	- Vcc > Vmin during writes
 
 	// I/O
-	input wire [511:0] CACHE;
+	input [511:0] CACHE;
 	// FPGA control lines
 	//input CLK_800KHz; 	// Control clock from DE2-115 COMMENTED OUT ONLY TEMPORARILY
 	//	wire CLK_50kHz; //TEMPORARY
@@ -22,13 +22,13 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 	input CLK_50MHz; //TEMPORARY
 	// I2C comm lines
 	output reg SCL;
-	output SDA;
+	inout SDA;
 	// EEPROM config lines
 	output WP; // EEPROM Write-Protect
 
 	// Parameters
-	wire useAckPolling = 1; // enable continuous polling the Acknowledge bit intead of waiting Twc
-	wire usePageWrites = 1; // enable page write mode instead of byte write mode
+	//wire useAckPolling = 1; // enable continuous polling the Acknowledge bit intead of waiting Twc
+	//wire usePageWrites = 1; // enable page write mode instead of byte write mode
 
 	parameter 	ControlByte 	= 3'b000,
 	AddressMSBByte 	= 3'b001,
@@ -50,7 +50,7 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 	reg isFirstClock;
 
 	// Continuous Logic
-	assign SDA = (sdaEnable) ? sdaCACHE : 1'bz; ////////////////////////////////////////////////////////////////////////////////////////////////
+	assign SDA = (sdaEnable) ? sdaCACHE : 1'bz;
 	assign WP = 0;
 	assign MemLoc = 0;
 
@@ -80,8 +80,8 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 
 
 	//Generate SCL
-	always @ (posedge /*CLK_800KHz*//*CLKLogic*/CLK_50MHz or negedge RESET)
-	begin
+	//always @ (posedge /*CLK_800KHz*//*CLKLogic*/CLK_50MHz or negedge RESET)
+	/*begin
 
 		if (RESET == 0)
 			begin
@@ -92,14 +92,16 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 			begin
 				if (isFirstClock == 0)
 					begin
-						isFirstClock <= 1;
+						isFirstClock <= 1;				
+						SCL <= 1;
 					end
 				else
 					begin
-						SCL <= !SCL;
+						SCL <= ~SCL;
+						isFirstClock <= 1;				
 					end
 			end // End if/else block for resetting
-	end
+	end*/
 
 	always @ (negedge CLKLogic or negedge RESET) begin
 		if(!RESET)
@@ -110,9 +112,25 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 				ByteState <= 0;
 				DataIndex <= 0;
 				EndFlag <= 0;
+				
+// Testing
+				SCL <= 1;
+				isFirstClock <= 0;
 			end
 		else
 			begin
+				if (isFirstClock == 0)
+					begin
+						isFirstClock <= 1;				
+						SCL <= 1;
+					end
+				else
+					begin
+						SCL <= ~SCL;
+						isFirstClock <= 1;				
+					end
+// end testing
+				
 				case(ByteState)
 					ControlByte:
 					begin
