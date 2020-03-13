@@ -61,4 +61,8 @@
 
 # Allow Arduino Source Code
 !*.ino
+# Allow SystemVerilog files
+!*.sv
+
+
 

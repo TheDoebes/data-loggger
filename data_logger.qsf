@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE EP4CE115F29C7
 set_global_assignment -name TOP_LEVEL_ENTITY data_logger
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "21:21:37  MARCH 12, 2020"
-set_global_assignment -name LAST_QUARTUS_VERSION "16.1.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 SP0.02std Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -53,27 +53,34 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name SYSTEMVERILOG_FILE data_logger.sv
-set_global_assignment -name VERILOG_FILE SPI_Leader.v
-set_global_assignment -name VERILOG_FILE I2C_Leader.v
-set_global_assignment -name SOURCE_FILE db/data_logger.cmp.rdb
 set_location_assignment PIN_Y2 -to CLK_50MHz
-set_location_assignment PIN_AB22 -to GPIO0
-set_location_assignment PIN_AB21 -to GPIO2
-set_location_assignment PIN_AC21 -to GPIO4
-set_location_assignment PIN_AC15 -to GPIO1
-set_location_assignment PIN_Y17 -to GPIO3
-set_location_assignment PIN_Y16 -to GPIO5
-set_location_assignment PIN_AE16 -to GPIO7
 set_location_assignment PIN_AB28 -to SW
 set_location_assignment PIN_G19 -to LEDR
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLK_50MHz
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO0
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO1
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO2
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO3
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO4
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO5
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO7
+set_global_assignment -name SYSTEMVERILOG_FILE data_logger.sv
+set_global_assignment -name SOURCE_FILE db/data_logger.cmp.rdb
 set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform.vwf
+set_location_assignment PIN_AB22 -to WP
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to WP
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SDA
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SCL
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Din
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Dout
+set_location_assignment PIN_AB21 -to SCL
+set_location_assignment PIN_AC21 -to SDA
+set_location_assignment PIN_AC15 -to CS
+set_location_assignment PIN_Y16 -to Dout
+set_location_assignment PIN_AE16 -to Din
+set_location_assignment PIN_Y17 -to CLKsample
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLKsample
+set_location_assignment PIN_E21 -to LEDG[7]
+set_location_assignment PIN_E22 -to LEDG[6]
+set_location_assignment PIN_E25 -to LEDG[5]
+set_location_assignment PIN_E24 -to LEDG[4]
+set_location_assignment PIN_H21 -to LEDG[3]
+set_location_assignment PIN_G20 -to LEDG[2]
+set_location_assignment PIN_G22 -to LEDG[1]
+set_location_assignment PIN_G21 -to LEDG[0]
+set_location_assignment PIN_F17 -to LEDG8
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
