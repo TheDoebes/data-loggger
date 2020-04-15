@@ -68,7 +68,7 @@ module I2C_Leader(/*CLK_800KHz,*/CLK_50MHz, RESET, SDA, SCL, WP, CACHE);
 
 		else
 			begin	// TODO fix clocks
-				if (ClockCounter >= 32'd10000) //CHANGE THIS BEFORE UPLOAD, CLOCK IS TOO FAST FOR DEVICE.  HIGH SPEED FOR SIMULATION ONLY (4 for HI, 499 for LO)
+				if (ClockCounter >= 32'd10000) //Change to 4 for simulation, ~10k for synthesis
 					begin
 						ClockCounter <= 32'd0;
 						CLKLogic <= !CLKLogic;

@@ -119,13 +119,13 @@ module data_logger(SW, LEDR, SCL,SDA,WP, CLK_50MHz, Dout,Din,CS,CLKsample, LEDG,
 						CS <= 1'b0; // Stays low to run chip
 						Din <= 1'b1; // Selects CH1 for analog input
 					end
-					5'd4	: // TODO duplicate this state to add an additional delay, fixing an off by one
+					5'd4	: // duplicated this state to add an additional delay, fixing an off by one. not sure why this occurred.
 					begin
 						stateCounter <= stateCounter_next;
 						CS <= 1'b0; // Stays low to run chip
 						Din <= 1'b1; // Selects MSB first mode
 					end
-					5'd5	: // TODO duplicate this state to add an additional delay, fixing an off by one
+					5'd5	: 
 					begin
 						stateCounter <= stateCounter_next;
 						CS <= 1'b0; // Stays low to run chip
